@@ -10,10 +10,13 @@ services:
     networks:
       - nginx-network
       - trouvetonmarche-network
+      - gcs-api-gateway-network
 
 # Réseaux externes existants
 networks:
   nginx-network:
     external: true
   trouvetonmarche-network:
+    external: true
+  gcs-api-gateway-network:
     external: true
