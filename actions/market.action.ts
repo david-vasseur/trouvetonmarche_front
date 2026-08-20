@@ -268,8 +268,9 @@ export async function uploadImageAction(formData: FormData): Promise<string> {
     const result = await response.json();
     console.log("5️⃣ [uploadImageAction] JSON brut renvoyé par le Gateway :", result);
     
-    const imageUrl = result.url; // On verra si c'est bien là dedans ou dans un tableau
+    // C'est un tableau, on prend le premier élément !
+    const imageUrl = Array.isArray(result) ? result[0] : result.url; 
     console.log("6️⃣ [uploadImageAction] URL finale extraite :", imageUrl);
 
-    return imageUrl; 
+    return imageUrl;
 }
