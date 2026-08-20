@@ -183,6 +183,7 @@ export default function MarketContentForm({
 
                 // Appel de ta Server Action Next.js
                 const publicUrl = await uploadImageAction(formData);
+                console.log(publicUrl);
 
                 // On injecte l'URL finale dans le form (le type string est respecté !)
                 field.handleChange(publicUrl);
