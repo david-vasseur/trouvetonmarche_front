@@ -1,0 +1,63 @@
+# --- Dépendances ---
+node_modules
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug*
+
+# --- Prisma / copilot ---
+.agents
+.claude
+.windsurf
+skills-lock.json
+AGENTS.md
+CLAUDE.md
+prisma/
+lib/generated
+lib/prisma.ts
+prisma.config.ts
+
+# --- Sorties de build & cache ---
+.next/
+out/
+build/
+dist/
+.turbo/
+.cache/
+
+# --- Environnement et secrets (TRÈS IMPORTANT) ---
+.env
+.env.local
+.env.*
+
+# --- Contrôle de version ---
+.git
+.gitignore
+.gitattributes
+
+# --- IDEs et système ---
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Docker & Documentation ---
+Dockerfile*
+docker-compose*
+.dockerignore
+README.md
+LICENSE
+
+# --- Tests (Optionnel, mais allège l'image) ---
+tests/
+test-results/
+coverage/
+__tests__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+playwright.config.ts
+vitest.config.ts

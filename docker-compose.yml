@@ -1,0 +1,19 @@
+services:
+  trouvetonmarche-front:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trouvetonmarche-front
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - nginx-network
+      - trouvetonmarche-network
+
+# Réseaux externes existants
+networks:
+  nginx-network:
+    external: true
+  trouvetonmarche-network:
+    external: true
