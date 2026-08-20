@@ -5,38 +5,33 @@ import { ArrowLeft, CircleHelp } from "lucide-react";
 import MarketCreateWizard from "@/components/form/market/MarketWrapperForm";
 import { useUserStore } from "@/lib/store/userStore";
 import { redirect } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getCategories } from "@/actions/category.action";
 
+type CategoryType = {
+    id: number;
+    name: string;
+    slug: string;
+};
 
 export default function CreateMarketPage() {
 
     const { user } = useUserStore();
+    const [categories, setCategories] = useState<CategoryType[]>([]);
 
     if (!user) {
-    redirect("/login");
-}
+        redirect("/login");
+    }
 
-    const categories = [
-        {
-        id: 1,
-        name: "Marché",
-        slug: "marche",
-        },
-        {
-        id: 2,
-        name: "Marché nocturne",
-        slug: "marche-nocturne",
-        },
-        {
-        id: 3,
-        name: "Foire",
-        slug: "foire",
-        },
-        {
-        id: 4,
-        name: "Salon",
-        slug: "salon",
-        },
-    ];
+    useEffect(() => {
+        async function fetchCats() {
+            const res = await getCategories();
+            if (Array.isArray(res) && res.length > 0) {
+                setCategories(res);
+            }
+        }
+        fetchCats();
+    }, []);
 
     return (
         <main className="min-h-screen bg-slate-50">
