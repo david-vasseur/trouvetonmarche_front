@@ -11,7 +11,7 @@ export const getUser = async (userId: number): Promise<UserProfile | null> => {
   const token = cookieStore.get('auth_token')?.value;
 
   try {
-    const response = await fetch(`http://${URL}${userId}`, {
+    const response = await fetch(`${URL}${userId}`, {
       method: "GET",
       headers: {
         // On transmet le token si l'API route est protégée par un Guard

@@ -44,7 +44,7 @@ const serializeData = (data: any): any => {
 
 const fetchMarkets = async (queryString: string) => {
   try {
-    const response = await fetch(`${URL}/markets?${queryString}`, {
+    const response = await fetch(`${URL}markets?${queryString}`, {
       next: { revalidate: 3600 },
     });
 
@@ -234,31 +234,42 @@ export async function getFilteredMarkets(filters: {
 }
 
 export async function uploadImageAction(formData: FormData): Promise<string> {
-	const file = formData.get('file');
-	if (!file) {
-		throw new Error("Aucun fichier fourni");
-	}
+    console.log("1️⃣ [uploadImageAction] Début de l'action");
+    
+    const file = formData.get('file');
+    console.log("2️⃣ [uploadImageAction] Fichier récupéré :", file ? (file as File).name : "Aucun fichier");
+    
+    if (!file) {
+        throw new Error("Aucun fichier fourni");
+    }
 
-	// On prépare le payload pour ton micro-service GCS interne
-	const gcsFormData = new FormData();
-	gcsFormData.append('files', file); 
-	gcsFormData.append('bucket', process.env.GCS_BUCKET_NAME!);
+    // On prépare le payload pour ton micro-service GCS interne
+    const gcsFormData = new FormData();
+    gcsFormData.append('files', file); 
+    gcsFormData.append('bucket', process.env.GCS_BUCKET_NAME!);
+    console.log("3️⃣ [uploadImageAction] Envoi vers le gateway pour le bucket :", process.env.GCS_BUCKET_NAME);
 
-	const response = await fetch('http://gcs-api-gateway:3000/gcs/upload', {
-		method: 'POST',
-		headers: {
-		'x-internal-api-key': process.env.INTERNAL_API_KEY!,
-		},
-		body: gcsFormData,
-	});
+    const response = await fetch('http://gcs-api-gateway:3000/gcs/upload', {
+        method: 'POST',
+        headers: {
+            'x-internal-api-key': process.env.INTERNAL_API_KEY!,
+        },
+        body: gcsFormData,
+    });
 
-	if (!response.ok) {
-		const errorText = await response.text();
-		throw new Error(`Erreur GCS Gateway: ${errorText}`);
-	}
+    console.log("4️⃣ [uploadImageAction] Statut HTTP reçu du Gateway :", response.status, response.statusText);
 
-	const result = await response.json();
-	
-	// Retourne l'URL publique renvoyée par ton micro-service
-	return result.url; 
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ [uploadImageAction] Erreur texte du Gateway :", errorText);
+        throw new Error(`Erreur GCS Gateway: ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log("5️⃣ [uploadImageAction] JSON brut renvoyé par le Gateway :", result);
+    
+    const imageUrl = result.url; // On verra si c'est bien là dedans ou dans un tableau
+    console.log("6️⃣ [uploadImageAction] URL finale extraite :", imageUrl);
+
+    return imageUrl; 
 }
