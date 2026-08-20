@@ -8,6 +8,9 @@ import {
   type MarketContentValues,
 } from "@/schema/market/market.schema";
 import TiptapEditor from "../TiptapEditor";
+import { useState } from "react";
+import { toast } from "sonner";
+import { uploadImageAction } from "@/actions/market.action";
 
 type MarketContentFormProps = {
   onPrevious: () => void;
@@ -39,6 +42,8 @@ export default function MarketContentForm({
       onNext(value);
     },
   });
+
+  const [isUploading, setIsUploading] = useState(false);
 
   return (
     <form
@@ -148,7 +153,7 @@ export default function MarketContentForm({
         </form.Field>
       </div>
 
-      {/* ============================================================ */}
+  {/* ============================================================ */}
       {/* 3. IMAGE                                                      */}
       {/* ============================================================ */}
 
@@ -164,36 +169,97 @@ export default function MarketContentForm({
         </div>
 
         <form.Field name="image">
-          {(field) => (
-            <div>
-              <label
-                htmlFor={field.name}
-                className="block text-sm font-medium text-slate-700"
-              >
-                URL de l'image
-              </label>
+          {(field) => {
+            
 
-              <input
-                id={field.name}
-                name={field.name}
-                type="url"
-                value={field.state.value ?? ""}
-                onBlur={field.handleBlur}
-                onChange={(event) =>
-                  field.handleChange(event.target.value)
-                }
-                placeholder="https://..."
-                className={inputClassName}
-              />
+            const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
 
-              {field.state.meta.isTouched &&
-                field.state.meta.errors.length > 0 && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {field.state.meta.errors[0]?.message}
-                  </p>
+              setIsUploading(true);
+              try {
+                const formData = new FormData();
+                formData.append("file", file);
+
+                // Appel de ta Server Action Next.js
+                const publicUrl = await uploadImageAction(formData);
+
+                // On injecte l'URL finale dans le form (le type string est respecté !)
+                field.handleChange(publicUrl);
+              } catch (error) {
+                console.error("Erreur lors de l'upload :", error);
+                toast.error("Erreur lors de l'upload de l'image");
+              } finally {
+                setIsUploading(false);
+              }
+            };
+
+            return (
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  Illustration
+                </label>
+
+                {field.state.value ? (
+                  // Si on a déjà une image, on affiche un aperçu et un bouton pour changer
+                  <div className="mt-2 space-y-3">
+                    <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                      <img
+                        src={field.state.value}
+                        alt="Aperçu de l'événement"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <label className="cursor-pointer rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">
+                        {isUploading ? "Chargement..." : "Changer l'image"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleFileChange}
+                          disabled={isUploading}
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => field.handleChange(null)}
+                        className="text-xs font-semibold text-red-600 transition hover:text-red-700"
+                      >
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  // Sinon, on affiche une zone de drop / sélection classique
+                  <label className={`mt-2 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white p-6 transition hover:border-emerald-500 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-slate-700">
+                        {isUploading ? "Téléchargement en cours..." : "Cliquez pour sélectionner une image"}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-400">
+                        PNG, JPG, WEBP
+                      </p>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleFileChange}
+                      disabled={isUploading}
+                    />
+                  </label>
                 )}
-            </div>
-          )}
+
+                {field.state.meta.isTouched &&
+                  field.state.meta.errors.length > 0 && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {field.state.meta.errors[0]?.message}
+                    </p>
+                  )}
+              </div>
+            );
+          }}
         </form.Field>
       </div>
 

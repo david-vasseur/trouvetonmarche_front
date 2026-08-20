@@ -232,3 +232,33 @@ export async function getFilteredMarkets(filters: {
         return { success: false, error: 'Impossible de récupérer les marchés filtrés.' };
     }
 }
+
+export async function uploadImageAction(formData: FormData): Promise<string> {
+	const file = formData.get('file');
+	if (!file) {
+		throw new Error("Aucun fichier fourni");
+	}
+
+	// On prépare le payload pour ton micro-service GCS interne
+	const gcsFormData = new FormData();
+	gcsFormData.append('files', file); 
+	gcsFormData.append('bucket', process.env.GCS_BUCKET_NAME!);
+
+	const response = await fetch('http://gcs-api-gateway:3000/gcs/upload', {
+		method: 'POST',
+		headers: {
+		'x-internal-api-key': process.env.INTERNAL_API_KEY!,
+		},
+		body: gcsFormData,
+	});
+
+	if (!response.ok) {
+		const errorText = await response.text();
+		throw new Error(`Erreur GCS Gateway: ${errorText}`);
+	}
+
+	const result = await response.json();
+	
+	// Retourne l'URL publique renvoyée par ton micro-service
+	return result.url; 
+}
