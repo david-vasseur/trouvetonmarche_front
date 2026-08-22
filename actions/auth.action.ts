@@ -135,11 +135,8 @@ export async function retrievePassword(formData: FormData): Promise<{ success: b
 
 export async function resetPasswordAction(token: string, newPassword: string) {
     try {
-        // Utilise l'URL interne du backend dans Docker (ex: http://backend:3000) 
-        // ou retombe sur l'URL publique si besoin
-        const apiUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL;
 
-        const response = await fetch(`${apiUrl}/auth/reset-password`, {
+        const response = await fetch(`${URL}auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword }),
