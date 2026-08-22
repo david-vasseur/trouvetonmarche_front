@@ -1,5 +1,21 @@
 import { z } from "zod";
 
+export const resetPasswordSchema = z.object({
+  password: z
+      .string({
+        error: "Le mot de passe est requis.",
+      })
+      .min(8, "Le mot de passe doit contenir au moins 8 caractères."),
+
+    passwordConfirm: z
+      .string({
+        error: "La confirmation est requise.",
+      })
+      .min(8, "La confirmation doit contenir au moins 8 caractères."),
+})
+
+export type ResetPasswordFormValues = z.infer< typeof resetPasswordSchema>
+
 export const retrievePasswordSchema = z.object({
   email: z
     .string()

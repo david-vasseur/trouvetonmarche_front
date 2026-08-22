@@ -132,3 +132,36 @@ export async function retrievePassword(formData: FormData): Promise<{ success: b
         return { success: false, message: "Impossible de joindre le serveur." };
     }
 }
+
+export async function resetPasswordAction(token: string, newPassword: string) {
+    try {
+        // Utilise l'URL interne du backend dans Docker (ex: http://backend:3000) 
+        // ou retombe sur l'URL publique si besoin
+        const apiUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL;
+
+        const response = await fetch(`${apiUrl}/auth/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, newPassword }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+        return { 
+            success: false, 
+            message: data.message || 'Une erreur est survenue lors de la réinitialisation.' 
+        };
+        }
+
+        return { 
+        success: true, 
+        message: 'Mot de passe réinitialisé avec succès ! Redirection...' 
+        };
+    } catch (error: any) {
+        return { 
+        success: false, 
+        message: error.message || "Impossible de contacter le serveur." 
+        };
+    }
+}
