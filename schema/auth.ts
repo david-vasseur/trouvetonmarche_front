@@ -1,18 +1,27 @@
 import { z } from "zod";
 
-export const resetPasswordSchema = z.object({
-  password: z
+export const resetPasswordSchema = z
+  .object({
+    password: z
       .string({
         error: "Le mot de passe est requis.",
       })
-      .min(8, "Le mot de passe doit contenir au moins 8 caractères."),
+      .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        "Le mot de passe doit contenir au moins une lettre majuscule, une minuscule et un chiffre"
+      ),
 
     passwordConfirm: z
       .string({
         error: "La confirmation est requise.",
       })
       .min(8, "La confirmation doit contenir au moins 8 caractères."),
-})
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: "Les mots de passe ne correspondent pas.",
+    path: ["passwordConfirm"], // Affiche l'erreur sur le champ de confirmation
+  });
 
 export type ResetPasswordFormValues = z.infer< typeof resetPasswordSchema>
 
@@ -72,7 +81,11 @@ export const registerSchema = z
       .string({
         error: "Le mot de passe est requis.",
       })
-      .min(8, "Le mot de passe doit contenir au moins 8 caractères."),
+      .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        "Le mot de passe doit contenir au moins une lettre majuscule, une minuscule et un chiffre"
+      ),
 
     passwordConfirm: z
       .string({
