@@ -137,7 +137,7 @@ export async function resetPasswordAction(formData: FormData) {
 
     const token = formData.get('token');
     const password = formData.get('password');
-    const confirmPassword = formData.get('confirmPassword');
+    const confirmPassword = formData.get('passwordConfirm');
 
     try {
 
