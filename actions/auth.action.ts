@@ -133,13 +133,18 @@ export async function retrievePassword(formData: FormData): Promise<{ success: b
     }
 }
 
-export async function resetPasswordAction(token: string, newPassword: string) {
+export async function resetPasswordAction(formData: FormData) {
+
+    const token = formData.get('token');
+    const password = formData.get('password');
+    const confirmPassword = formData.get('confirmPassword');
+
     try {
 
         const response = await fetch(`${URL}auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, newPassword }),
+        body: JSON.stringify({ token, password, confirmPassword }),
         });
 
         const data = await response.json();
