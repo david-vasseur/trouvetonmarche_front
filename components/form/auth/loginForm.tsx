@@ -9,6 +9,10 @@ import { getUser } from "@/actions/user.action";
 import { useUserStore } from "@/lib/store/userStore";
 import { useRouter } from "next/navigation";
 
+type LoginFormProps = {
+  onRetrieve: () => void;
+}
+
 const getErrorMessage = (errors: unknown[]) => {
   const firstError = errors[0];
 
@@ -21,7 +25,7 @@ const getErrorMessage = (errors: unknown[]) => {
   return "";
 };
 
-export default function LoginForm() {
+export default function LoginForm({ onRetrieve }: LoginFormProps) {
     const { setUser } = useUserStore();
     const router = useRouter();
     const defaultValues: LoginFormValues = {
@@ -146,12 +150,12 @@ export default function LoginForm() {
           )}
         />
 
-        <Link
-          href="/"
+        <button
           className="rounded-lg px-2 py-1 text-sm font-medium text-emerald-700 transition hover:bg-emerald-50 hover:text-emerald-800"
+          onClick={onRetrieve}
         >
           Mot de passe oublié ?
-        </Link>
+        </button>
       </div>
 
       <button

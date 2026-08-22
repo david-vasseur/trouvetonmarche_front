@@ -1,5 +1,14 @@
 import { z } from "zod";
-import { required } from "zod/mini";
+
+export const retrievePasswordSchema = z.object({
+  email: z
+    .string()
+    .min(2, "L’email est requis.")
+    .trim()
+    .email("L’email est invalide.")
+})
+
+export type RetrievePasswordFormValues = z.infer<typeof retrievePasswordSchema>
 
 export const loginSchema = z.object({
   email: z

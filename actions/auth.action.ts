@@ -100,3 +100,35 @@ export async function register(formData: FormData): Promise<void> {
   // Si tout est bon, l'inscription est réussie (tu peux rediriger l'utilisateur ici si besoin)
 }
 
+export async function retrievePassword(formData: FormData): Promise<{ success: boolean; message: string }> {
+    const email = String(formData.get("email") ?? "").trim();
+
+    if (!email || email === "") {
+        return { success: false, message: "Un email valide est obligatoire." };
+    }
+
+    try {
+        const response = await fetch(`${URL}auth/retrieve`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }),
+        });
+
+        // Même si le backend renvoie 200 (anti-énumération), on renvoie toujours un succès au front
+        if (response.ok) {
+            return { 
+                success: true, 
+                message: "Un email vient d'être envoyé, veuillez consulter votre messagerie. (Pensez à vérifier les spams)" 
+            };
+        }
+
+        // Si le backend renvoie une erreur (ex: 500)
+        return { success: false, message: "Une erreur est survenue. Veuillez réessayer." };
+        
+    } catch (error) {
+        // En cas de panne réseau du BFF vers le Backend
+        return { success: false, message: "Impossible de joindre le serveur." };
+    }
+}

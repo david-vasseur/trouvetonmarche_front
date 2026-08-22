@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import RegisterForm from "@/components/form/auth/registerForm";
 import LoginForm from "@/components/form/auth/loginForm";
+import RetrievePasswordForm from "@/components/form/auth/retrievePasswordForm";
 
 const highlights = [
     "Accès exposant & organisateur",
@@ -26,6 +27,7 @@ export default function LoginPage() {
     const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
     const [isRegister, setIsRegister] = useState(false);
+    const [isRetrieveLogin, setIsRetrieveLogin] = useState(false);
 
     useLayoutEffect(() => {
         if (
@@ -205,7 +207,11 @@ export default function LoginPage() {
                 </h2>
                 </div>
 
-                <LoginForm />
+                {!isRetrieveLogin ? (
+                    <LoginForm onRetrieve={() => setIsRetrieveLogin(true)} />
+                ) : (
+                    <RetrievePasswordForm onBack={() => setIsRetrieveLogin(false)} />
+                )}
             </div>
             </section>
 
